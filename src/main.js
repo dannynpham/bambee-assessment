@@ -6,7 +6,9 @@ import store from './store';
 
 Vue.config.productionTip = false;
 Object.entries(pollens).forEach(([name, component]) => {
-  if (name !== 'constants') {
+  if (name === 'constants') {
+    Vue.prototype.$constants = component;
+  } else {
     Vue.component(name, component);
   }
 });

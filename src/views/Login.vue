@@ -1,12 +1,27 @@
 <template>
-  <div class="login">
-    <FancyCard class="login-form">
-      <div class="max-w-xl m-auto text-center">
+  <div class="login h-screen w-screen flex content-center justify-center bg-primary bg-opacity-95">
+    <FancyCard class="max-w-xl m-auto h-1/3 w-1/3 text-center">
+      <div class="h-full grid grid-rows-4">
+        <TypeDisplay
+          :variant="$constants.Typography.Display.PETA"
+        >
+          Log in
+        </TypeDisplay>
         <TextInput
-            size="Large"
-            placeholder="Email"
-            @input="handleInput"
-          />
+          class="self-center"
+          :size="$constants.Form.Sizes.LARGE"
+          placeholder="Email"
+        />
+        <TextInput
+          :size="$constants.Form.Sizes.LARGE"
+          placeholder="Password"
+        />
+        <BaseButton
+          class="self-end"
+          :size="$constants.Form.Sizes.LARGE"
+        >
+          Submit
+        </BaseButton>
       </div>
     </FancyCard>
   </div>
@@ -16,22 +31,8 @@
 
 export default {
   name: 'Login',
+  beforeMount() {
+    console.log(this.$constants);
+  },
 };
 </script>
-
-<style lang="scss">
-.login {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  .login-form {
-    min-height: 30%;
-    max-height: 400px;
-    min-width: 30%;
-    max-width: 400px;
-    // background-color: red;
-  }
-}
-</style>
