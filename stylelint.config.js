@@ -1,13 +1,18 @@
 module.exports = {
   extends: [
-    'stylelint-config-recommended-scss',
+    'stylelint-config-recommended',
     'stylelint-config-recess-order',
   ],
   rules: {
     'max-nesting-depth': 4,
     'no-descending-specificity': null,
-    'property-no-unknown': [
-      true,
+    'at-rule-no-unknown': [true, {
+      ignoreAtRules: [
+        'extends',
+        'tailwind',
+      ],
+    }],
+    'property-no-unknown': [true,
       {
         ignoreProperties: [
           'user-drag',
@@ -15,8 +20,7 @@ module.exports = {
         ],
       },
     ],
-    'selector-pseudo-element-no-unknown': [
-      true,
+    'selector-pseudo-element-no-unknown': [true,
       {
         ignorePseudoElements: [
           'v-deep',
