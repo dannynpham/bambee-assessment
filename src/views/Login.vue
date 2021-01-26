@@ -2,9 +2,7 @@
   <div class="login h-screen w-screen flex items-center justify-center bg-primary-tint-1 bg-opacity-95">
     <FancyCard class="max-w-xl h-1/4 w-1/2 text-center">
       <div class="h-full grid grid-rows-4">
-        <TypeDisplay
-          :variant="$constants.Typography.Display.PETA"
-        >
+        <TypeDisplay :variant="$constants.Typography.Display.PETA">
           Log in
         </TypeDisplay>
         <TextInput
@@ -16,12 +14,14 @@
           post-icon="userSolid"
         />
         <TextInput
+          ref="passwordInput"
           v-model="password"
           class="password"
           :invalid="isPasswordInvalid"
           :size="$constants.Form.Sizes.LARGE"
           placeholder="Password"
           :post-icon="isPasswordHidden ? 'eyeClosed' : 'eyeOpen'"
+          @click.native="resetPassword"
         />
         <BaseButton
           class="self-end"
@@ -47,7 +47,7 @@ export default {
     isPasswordInvalid: false,
   }),
   mounted() {
-    console.log(this.$constants);
+    console.log(this);
     try {
       // Monkey patch UI inputs
       const emailEl = document.querySelector('.email input');
@@ -68,6 +68,13 @@ export default {
     }
   },
   methods: {
+    resetPassword() {
+      if (this.isPasswordInvalid && this.password) {
+        this.$refs.passwordInput.handleReset();
+        this.password = '';
+        this.isPasswordInvalid = false;
+      }
+    },
     submit() {
       this.isEmailInvalid = !this.email;
       this.isPasswordInvalid = !this.password;
@@ -75,6 +82,7 @@ export default {
       if (!this.isEmailInvalid || !this.isPasswordInvalid) {
         console.log('api call');
       }
+      this.$router.push({ name: 'Tasks' });
     },
   },
 };
