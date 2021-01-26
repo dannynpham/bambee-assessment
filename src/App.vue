@@ -11,8 +11,8 @@
 @import "~@bambee/pollen/dist/pollen.css";
 
 body {
+  height: 100%;
   margin: 0;
-  #app {
-  }
+  overflow: hidden;
 }
 </style>

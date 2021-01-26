@@ -1,6 +1,6 @@
 <template>
-  <div class="login h-screen w-screen flex content-center justify-center bg-primary bg-opacity-95">
-    <FancyCard class="max-w-xl m-auto h-1/3 w-1/3 text-center">
+  <div class="h-screen w-screen flex items-center justify-center bg-primary bg-opacity-95">
+    <FancyCard class="max-w-xl h-1/3 w-1/3 text-center">
       <div class="h-full grid grid-rows-4">
         <TypeDisplay
           :variant="$constants.Typography.Display.PETA"
@@ -18,7 +18,7 @@
         />
         <BaseButton
           class="self-end"
-          :size="$constants.Form.Sizes.LARGE"
+          :size="$constants.Button.Sizes.GIANT"
         >
           Submit
         </BaseButton>
