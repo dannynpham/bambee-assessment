@@ -7,11 +7,11 @@
       >
         Task Manager
       </TypeDisplay>
-      <div class="tasks-container mx-auto max-w-screen-2xl overflow-auto relative">
+      <div class="tasks-container mx-auto max-w-screen-2xl overflow-y-auto relative">
         <article
           v-for="task in tasks"
           :key="task.id"
-          class="task-card my-2 bg-primary-tint-5 mx-7 rounded-xl p-5"
+          class="task-card my-2 mr-3 bg-primary-tint-5 rounded-xl p-5"
         >
           <CheckboxInput
             class="task-card-checkbox self-center justify-self-end"
@@ -46,7 +46,9 @@ export default {
     tasks: Array.from({ length: 30 }).map((_val, id) => ({
       id,
       title: 'Take out trash',
-      description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
+      description: `Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+      Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown
+      printer took a galley of type and scrambled it to make a type specimen book.`,
       isCompleted: true,
       dueDate: '1/25/2021',
     })),
