@@ -8,20 +8,26 @@
           Log in
         </TypeDisplay>
         <TextInput
+          v-model="email"
           class="email"
+          :invalid="isEmailInvalid"
           :size="$constants.Form.Sizes.LARGE"
           placeholder="Email"
           post-icon="userSolid"
         />
         <TextInput
+          v-model="password"
           class="password"
+          :invalid="isPasswordInvalid"
           :size="$constants.Form.Sizes.LARGE"
           placeholder="Password"
           :post-icon="isPasswordHidden ? 'eyeClosed' : 'eyeOpen'"
         />
         <BaseButton
           class="self-end"
+          :variant="$constants.Button.Variants.SECONDARY"
           :size="$constants.Button.Sizes.GIANT"
+          @click="submit"
         >
           Submit
         </BaseButton>
@@ -35,26 +41,41 @@ export default {
   name: 'Login',
   data: () => ({
     isPasswordHidden: true,
+    email: '',
+    isEmailInvalid: false,
+    password: '',
+    isPasswordInvalid: false,
   }),
   mounted() {
     console.log(this.$constants);
     try {
       // Monkey patch UI inputs
-      const emailEl = document.querySelector('.email');
-      emailEl.querySelector('input').type = 'email';
+      const emailEl = document.querySelector('.email input');
+      emailEl.type = 'email';
 
-      const passwordEl = document.querySelector('.password');
-      passwordEl.querySelector('input').type = 'password';
+      const passwordEl = document.querySelector('.password input');
+      passwordEl.type = 'password';
 
-      const passwordEye = passwordEl.querySelector('.text-input__icon--post');
+      const passwordEye = document.querySelector('.password .text-input__icon--post');
       passwordEye.style.height = '100%';
       passwordEye.style.width = '25px';
       passwordEye.onclick = () => {
         this.isPasswordHidden = !this.isPasswordHidden;
+        passwordEl.type = this.isPasswordHidden ? 'password' : 'text';
       };
     } catch (error) {
       console.error(error);
     }
+  },
+  methods: {
+    submit() {
+      this.isEmailInvalid = !this.email;
+      this.isPasswordInvalid = !this.password;
+      console.log(this.email, this.password);
+      if (!this.isEmailInvalid || !this.isPasswordInvalid) {
+        console.log('api call');
+      }
+    },
   },
 };
 </script>
