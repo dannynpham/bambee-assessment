@@ -7,14 +7,28 @@
       >
         Task Manager
       </TypeDisplay>
-      <div class="mx-auto w-full max-w-screen-2xl flex justify-between">
-        <SelectInput
-          placeholder="Sort By"
-          class="w-1/6"
-          :options="sortOptions"
-          :value="tasksSortBy"
-          :show-reset="false"
+      <div class="mx-auto my-1 w-full max-w-screen-2xl flex justify-between">
+        <TextInput
+          v-model="search"
+          class="w-1/4"
+          post-icon="search"
         />
+        <div class="w-1/6 flex items-center">
+          <SelectInput
+            class="w-full mr-3"
+            placeholder="Sort By"
+            :options="sortOptions"
+            :value="tasksSortBy"
+            :show-reset="false"
+            @input="setTasksSortBy"
+          />
+          <IconButton
+            icon="arrowLeft"
+            :style="{ transform: `rotate(${tasksSortByAsc ? -90 : 90}deg)` }"
+            :variant="$constants.Button.Variants.INVERTED"
+            @click="toggleAsc"
+          />
+        </div>
       </div>
       <div
         class="tasks-container has-bottom-fade mx-auto max-w-screen-2xl overflow-y-auto relative"
@@ -25,7 +39,7 @@
           class="grid grid-flow-row auto-rows-fr"
         >
           <TaskCard
-            v-for="task in tasks"
+            v-for="task in filterTasksBySearch"
             :key="task.id"
             :task="task"
           />
@@ -37,16 +51,20 @@
 
 <script>
 import TaskCard from '@/components/TaskCard.vue';
-import { mapState } from 'vuex';
+import { mapState, mapGetters, mapMutations } from 'vuex';
 
 export default {
   name: 'Tasks',
   components: { TaskCard },
+  data: () => ({
+    search: '',
+  }),
   computed: {
     ...mapState([
-      'tasks',
       'tasksSortBy',
+      'tasksSortByAsc',
     ]),
+    ...mapGetters(['sortedTasks']),
     sortOptions() {
       // Place in constants file
       return [{
@@ -56,19 +74,25 @@ export default {
         label: 'Title',
         value: 'title',
       }, {
-        label: 'Completed',
-        value: 'isCompleted',
-      }, {
         label: 'Description',
         value: 'description',
       }];
     },
+    filterTasksBySearch() {
+      if (!this.search) {
+        return this.sortedTasks;
+      }
+      return this.sortedTasks.filter((task) => JSON.stringify(task).toLowerCase().includes(this.search));
+    },
   },
   beforeMount() {
-    console.log(this.$constants);
+    console.log(this);
     this.$store.dispatch('fetchTasks');
   },
   methods: {
+    toggleAsc() {
+      this.setTasksSortByAsc(!this.tasksSortByAsc);
+    },
     tasksScroll({ target }) {
       const { scrollTop, scrollHeight, clientHeight } = target;
       // Add debouncer
@@ -83,6 +107,10 @@ export default {
         target.classList.add('has-bottom-fade');
       }
     },
+    ...mapMutations([
+      'setTasksSortBy',
+      'setTasksSortByAsc',
+    ]),
   },
 };
 </script>
@@ -108,7 +136,7 @@ export default {
     }
     &.has-top-fade::before {
       top: 0;
-      margin: calc(4.5rem + 3%) 0;
+      margin: calc(5rem + 3% + 40px) 0;
       background: linear-gradient(to bottom, #6b4392 0%, rgba(251, 251, 251, 0) 100%);
     }
     &.has-bottom-fade::after {
