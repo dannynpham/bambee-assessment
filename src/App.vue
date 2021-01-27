@@ -15,10 +15,13 @@
 @tailwind utilities;
 @import "~@bambee/pollen/dist/pollen.css";
 
-body {
-  height: 100%;
-  margin: 0;
-  overflow: hidden;
+html {
+  scroll-behavior: smooth;
+  body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+  }
 }
 .component-fade-enter-active, .component-fade-leave-active {
   transition: opacity .3s ease;

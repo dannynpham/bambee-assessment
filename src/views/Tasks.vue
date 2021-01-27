@@ -43,6 +43,7 @@
         </div>
       </div>
       <div
+        ref="tasksContainer"
         class="tasks-container has-bottom-fade mx-auto max-w-screen-2xl overflow-y-auto relative"
         @scroll="tasksScroll"
       >
@@ -56,6 +57,19 @@
             :task="task"
           />
         </transition-group>
+        <ToolTip alt="Scroll to the top">
+          <template #trigger>
+            <IconButton
+              v-show="scrolledFromTop"
+              id="scroll-top"
+              icon="arrowLeft"
+              style="transform: rotate(90deg)"
+              :variant="$constants.Button.Variants.SECONDARY"
+              :size="$constants.Button.Sizes.GIANT"
+              @click="scrollTasksToTop"
+            />
+          </template>
+        </ToolTip>
       </div>
     </div>
   </div>
@@ -71,6 +85,7 @@ export default {
   components: { TaskCard },
   data: () => ({
     search: '',
+    scrolledFromTop: false,
     filters: [],
   }),
   computed: {
@@ -174,13 +189,18 @@ export default {
     toggleAsc() {
       this.setTasksSortByAsc(!this.tasksSortByAsc);
     },
+    scrollTasksToTop() {
+      this.$refs.tasksContainer.scrollTo({ top: 0, behavior: 'smooth' });
+    },
     tasksScroll({ target }) {
       const { scrollTop, scrollHeight, clientHeight } = target;
       // Add debouncer
       if (scrollTop) {
         target.classList.add('has-top-fade');
+        this.scrolledFromTop = true;
       } else {
         target.classList.remove('has-top-fade');
+        this.scrolledFromTop = false;
       }
       if ((clientHeight + scrollTop) >= scrollHeight) {
         target.classList.remove('has-bottom-fade');
@@ -216,7 +236,7 @@ export default {
     }
     &.has-top-fade::before {
       top: 0;
-      margin: calc(5rem + 3% + 40px) 0;
+      margin: 180px 0;
       background: linear-gradient(to bottom, #6b4392 0%, rgba(251, 251, 251, 0) 100%);
     }
     &.has-bottom-fade::after {
@@ -238,6 +258,11 @@ export default {
       .task-card-date { grid-area: task-card-date; }
 
       .task-card-description { grid-area: task-card-description; }
+    }
+    #scroll-top {
+      position: fixed;
+      right: 5%;
+      bottom: 50px;
     }
   }
 }
