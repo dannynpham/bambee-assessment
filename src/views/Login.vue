@@ -7,7 +7,7 @@
         </TypeDisplay>
         <TextInput
           v-model="email"
-          class="email"
+          class="email self-center"
           :invalid="isEmailInvalid"
           :size="$constants.Form.Sizes.LARGE"
           placeholder="Email"
@@ -31,6 +31,20 @@
         >
           Submit
         </BaseButton>
+        <div class="flex justify-end my-2">
+          <ToolTip class="ml-2">
+            <template #trigger>
+              <BaseButton
+                flat
+                :variant="$constants.Button.Variants.SECONDARY"
+                post-icon="question"
+              >
+                Forgot Password
+              </BaseButton>
+            </template>
+            That's too bad
+          </ToolTip>
+        </div>
       </div>
     </FancyCard>
   </div>

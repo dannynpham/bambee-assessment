@@ -7,67 +7,112 @@
       >
         Task Manager
       </TypeDisplay>
-      <div class="tasks-container mx-auto max-w-screen-2xl overflow-y-auto relative">
-        <article
-          v-for="task in tasks"
-          :key="task.id"
-          class="task-card my-2 mr-3 bg-primary-tint-5 rounded-xl p-5"
+      <div class="mx-auto w-full max-w-screen-2xl flex justify-between">
+        <SelectInput
+          placeholder="Sort By"
+          class="w-1/6"
+          :options="sortOptions"
+          :value="tasksSortBy"
+          :show-reset="false"
+        />
+      </div>
+      <div
+        class="tasks-container has-bottom-fade mx-auto max-w-screen-2xl overflow-y-auto relative"
+        @scroll="tasksScroll"
+      >
+        <transition-group
+          name="list"
+          class="grid grid-flow-row auto-rows-fr"
         >
-          <CheckboxInput
-            class="task-card-checkbox self-center justify-self-end"
-            :value="task.isCompleted"
+          <TaskCard
+            v-for="task in tasks"
+            :key="task.id"
+            :task="task"
           />
-          <TypeHeading
-            class="task-card-title self-center xl:text-4xl"
-            :variant="$constants.Typography.Heading.HEADLINE"
-          >
-            {{ task.title }}
-          </TypeHeading>
-          <TypeHeading
-            class="task-card-date self-center justify-self-center xl:text-2xl"
-            :variant="$constants.Typography.Heading.SUBTITLE"
-            :weight="$constants.Typography.Weights.REGULAR"
-          >
-            {{ task.dueDate }}
-          </TypeHeading>
-          <div class="task-card-description xl:text-xl">
-            {{ task.description }}
-          </div>
-        </article>
+        </transition-group>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import TaskCard from '@/components/TaskCard.vue';
+import { mapState } from 'vuex';
+
 export default {
   name: 'Tasks',
-  data: () => ({
-    tasks: Array.from({ length: 30 }).map((_val, id) => ({
-      id,
-      title: 'Take out trash',
-      description: `Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-      Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown
-      printer took a galley of type and scrambled it to make a type specimen book.`,
-      isCompleted: true,
-      dueDate: '1/25/2021',
-    })),
-  }),
+  components: { TaskCard },
+  computed: {
+    ...mapState([
+      'tasks',
+      'tasksSortBy',
+    ]),
+    sortOptions() {
+      // Place in constants file
+      return [{
+        label: 'Due Date',
+        value: 'dueDate',
+      }, {
+        label: 'Title',
+        value: 'title',
+      }, {
+        label: 'Completed',
+        value: 'isCompleted',
+      }, {
+        label: 'Description',
+        value: 'description',
+      }];
+    },
+  },
   beforeMount() {
     console.log(this.$constants);
+    this.$store.dispatch('fetchTasks');
+  },
+  methods: {
+    tasksScroll({ target }) {
+      const { scrollTop, scrollHeight, clientHeight } = target;
+      // Add debouncer
+      if (scrollTop) {
+        target.classList.add('has-top-fade');
+      } else {
+        target.classList.remove('has-top-fade');
+      }
+      if ((clientHeight + scrollTop) >= scrollHeight) {
+        target.classList.remove('has-bottom-fade');
+      } else {
+        target.classList.add('has-bottom-fade');
+      }
+    },
   },
 };
 </script>
 
 <style lang="scss">
+.list-enter-active, .list-leave-active {
+  transition: all 1s;
+}
+
+.list-enter, .list-leave-to {
+  opacity: 0;
+  transform: translateY(50px);
+}
+
 .tasks {
   .tasks-container {
+    &::before,
     &::after {
-      position: fixed;
+        position: fixed;
+        width: 100%;
+        height: 3%;
+        content: '';
+    }
+    &.has-top-fade::before {
+      top: 0;
+      margin: calc(4.5rem + 3%) 0;
+      background: linear-gradient(to bottom, #6b4392 0%, rgba(251, 251, 251, 0) 100%);
+    }
+    &.has-bottom-fade::after {
       bottom: 0;
-      width: 100%;
-      height: 3%;
-      content: '';
       background: linear-gradient(to top, #6b4392 0%, rgba(251, 251, 251, 0) 100%);
     }
     .task-card {
