@@ -11,23 +11,35 @@
         <TextInput
           v-model="search"
           class="w-1/4"
+          placeholder="Search"
           post-icon="search"
         />
-        <div class="w-1/6 flex items-center">
+        <div class="w-2/5 flex items-center">
           <SelectInput
-            class="w-full mr-3"
+            v-model="filters"
+            class="w-3/4 mr-3"
+            placeholder="Filters"
+            :options="filterOptions"
+            multiple
+          />
+          <SelectInput
+            class="w-1/4 mr-3"
             placeholder="Sort By"
             :options="sortOptions"
             :value="tasksSortBy"
             :show-reset="false"
             @input="setTasksSortBy"
           />
-          <IconButton
-            icon="arrowLeft"
-            :style="{ transform: `rotate(${tasksSortByAsc ? -90 : 90}deg)` }"
-            :variant="$constants.Button.Variants.INVERTED"
-            @click="toggleAsc"
-          />
+          <ToolTip :alt="tasksSortByAsc ? 'Ascending' : 'Descending'">
+            <template #trigger>
+              <IconButton
+                icon="arrowLeft"
+                :style="{ transform: `rotate(${tasksSortByAsc ? -90 : 90}deg)` }"
+                :variant="$constants.Button.Variants.INVERTED"
+                @click="toggleAsc"
+              />
+            </template>
+          </ToolTip>
         </div>
       </div>
       <div
@@ -39,7 +51,7 @@
           class="grid grid-flow-row auto-rows-fr"
         >
           <TaskCard
-            v-for="task in filterTasksBySearch"
+            v-for="task in filteredTasks"
             :key="task.id"
             :task="task"
           />
@@ -58,6 +70,7 @@ export default {
   components: { TaskCard },
   data: () => ({
     search: '',
+    filters: [],
   }),
   computed: {
     ...mapState([
@@ -78,11 +91,51 @@ export default {
         value: 'description',
       }];
     },
-    filterTasksBySearch() {
+    filterOptions() {
+      // Place in constants file
+      return [{
+        label: 'Today',
+        value: 'today',
+      }, {
+        label: 'After Today',
+        value: 'afterToday',
+      }, {
+        label: 'Before Today',
+        value: 'beforeToday',
+      }, {
+        label: 'Completed',
+        value: 'completed',
+      }, {
+        label: 'Not Completed',
+        value: 'notCompleted',
+      }];
+    },
+    filteredTasks() {
       if (!this.search) {
         return this.sortedTasks;
       }
       return this.sortedTasks.filter((task) => JSON.stringify(task).toLowerCase().includes(this.search));
+    },
+  },
+  watch: {
+    filters() {
+      if (this.filters.length > 1) {
+        const lastSelection = this.filters[this.filters.length - 1];
+        const isTodayFilter = lastSelection?.toLowerCase()?.includes('today');
+        const isCompletedFilter = lastSelection?.toLowerCase()?.includes('completed');
+        const filtersExcludingLast = this.filters.slice(0, this.filters.length - 1);
+        if (isTodayFilter) {
+          const idx = filtersExcludingLast.findIndex((val) => val.toLowerCase().includes('today'));
+          if (idx !== -1) {
+            this.filters.splice(idx, 1);
+          }
+        } else if (isCompletedFilter) {
+          const idx = filtersExcludingLast.findIndex((val) => val.toLowerCase().includes('completed'));
+          if (idx !== -1) {
+            this.filters.splice(idx, 1);
+          }
+        }
+      }
     },
   },
   beforeMount() {
@@ -122,7 +175,6 @@ export default {
 
 .list-enter, .list-leave-to {
   opacity: 0;
-  transform: translateY(50px);
 }
 
 .tasks {

@@ -18,7 +18,7 @@ app.get('/tasks', (req, res) => {
     title: faker.fake('{{lorem.sentence}}'),
     description: faker.fake('{{lorem.paragraph}}'),
     isCompleted: !!Math.round(Math.random()),
-    dueDate: moment(faker.date.between('2021-01-15', '2021-02-15')).toISOString(),
+    dueDate: moment(faker.date.between('2021-01-22', '2021-02-03')).toISOString(),
   }));
 
   return res.send(tasks);
