@@ -23,7 +23,7 @@
             multiple
           />
           <SelectInput
-            class="w-1/4 mr-3"
+            class="w-2/5 mr-3"
             placeholder="Sort By"
             :options="sortOptions"
             :value="tasksSortBy"
@@ -64,6 +64,7 @@
 <script>
 import TaskCard from '@/components/TaskCard.vue';
 import { mapState, mapGetters, mapMutations } from 'vuex';
+import moment from 'moment';
 
 export default {
   name: 'Tasks',
@@ -95,7 +96,7 @@ export default {
       // Place in constants file
       return [{
         label: 'Today',
-        value: 'today',
+        value: 'Today',
       }, {
         label: 'After Today',
         value: 'afterToday',
@@ -104,33 +105,37 @@ export default {
         value: 'beforeToday',
       }, {
         label: 'Completed',
-        value: 'completed',
+        value: 'Completed',
       }, {
         label: 'Not Completed',
         value: 'notCompleted',
       }];
     },
     filteredTasks() {
+      let tasks = [];
       if (!this.search) {
-        return this.sortedTasks;
+        tasks = [...this.sortedTasks];
+      } else {
+        tasks = this.sortedTasks.filter((task) => JSON.stringify(task).toLowerCase().includes(this.search));
       }
-      return this.sortedTasks.filter((task) => JSON.stringify(task).toLowerCase().includes(this.search));
+      return this.filterTasks(tasks);
     },
   },
   watch: {
     filters() {
+      // Removes conflicting filters
       if (this.filters.length > 1) {
         const lastSelection = this.filters[this.filters.length - 1];
-        const isTodayFilter = lastSelection?.toLowerCase()?.includes('today');
-        const isCompletedFilter = lastSelection?.toLowerCase()?.includes('completed');
+        const isTodayFilter = lastSelection?.includes('Today');
+        const isCompletedFilter = lastSelection?.includes('Completed');
         const filtersExcludingLast = this.filters.slice(0, this.filters.length - 1);
         if (isTodayFilter) {
-          const idx = filtersExcludingLast.findIndex((val) => val.toLowerCase().includes('today'));
+          const idx = filtersExcludingLast.findIndex((val) => val.includes('Today'));
           if (idx !== -1) {
             this.filters.splice(idx, 1);
           }
         } else if (isCompletedFilter) {
-          const idx = filtersExcludingLast.findIndex((val) => val.toLowerCase().includes('completed'));
+          const idx = filtersExcludingLast.findIndex((val) => val.includes('Completed'));
           if (idx !== -1) {
             this.filters.splice(idx, 1);
           }
@@ -143,6 +148,29 @@ export default {
     this.$store.dispatch('fetchTasks');
   },
   methods: {
+    filterTasks(tasks) {
+      const filtersToApply = [];
+      // Place in constants file
+      this.filters.forEach((filter) => {
+        if (filter.includes('Today')) {
+          const today = moment();
+          if (filter === 'Today') {
+            filtersToApply.push((task) => moment(task.dueDate).isSame(today, 'day'));
+          } else if (filter === 'beforeToday') {
+            filtersToApply.push((task) => moment(task.dueDate).isBefore(today, 'day'));
+          } else if (filter === 'afterToday') {
+            filtersToApply.push((task) => moment(task.dueDate).isAfter(today, 'day'));
+          }
+        } else if (filter.includes('Completed')) {
+          if (filter === 'Completed') {
+            filtersToApply.push((task) => task.isCompleted);
+          } else if (filter === 'notCompleted') {
+            filtersToApply.push((task) => !task.isCompleted);
+          }
+        }
+      });
+      return tasks.filter((task) => filtersToApply.every((filterFn) => filterFn(task)));
+    },
     toggleAsc() {
       this.setTasksSortByAsc(!this.tasksSortByAsc);
     },
