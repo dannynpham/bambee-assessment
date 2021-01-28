@@ -14,6 +14,7 @@
       <TextInput
         v-model="task.title"
         class="w-full"
+        :invalid="isTitleInvalid"
         :show-reset="true"
         :size="$constants.Form.Sizes.LARGE"
       />
@@ -21,16 +22,19 @@
       <TextareaInput
         v-model="task.description"
         class="w-full"
+        :invalid="isDescriptionInvalid"
         :size="$constants.Form.Sizes.LARGE"
       />
       <TypeHeading>Due Date</TypeHeading>
       <DateInput
         v-model="task.dueDate"
         class="w-full"
+        :invalid="isDueDateInvalid"
         :size="$constants.Form.Sizes.LARGE"
       />
       <TypeHeading>Status</TypeHeading>
       <CheckboxInput
+        v-show="selectedTask.uuid"
         v-model="task.isCompleted"
         label-position="left"
       />
@@ -68,6 +72,9 @@ export default {
     },
   },
   data: () => ({
+    isTitleInvalid: false,
+    isDescriptionInvalid: false,
+    isDueDateInvalid: false,
     task: {
       uuid: '',
       title: '',
@@ -76,6 +83,13 @@ export default {
       isCompleted: false,
     },
   }),
+  computed: {
+    isTaskValid() {
+      return !this.isTitleInvalid
+      && !this.isDescriptionInvalid
+      && !this.isDueDateInvalid;
+    },
+  },
   watch: {
     selectedTask: {
       handler() {
@@ -87,14 +101,20 @@ export default {
   },
   methods: {
     async saveTask() {
-      if (this.task.uuid) {
-        await this.updateTask(this.task);
-        this.setAlertMessage('Updated Task Successfully');
-      } else {
-        await this.createTask(this.task);
-        this.setAlertMessage('Created Task Successfully');
+      this.isTitleInvalid = !this.task.title;
+      this.isDescriptionInvalid = !this.task.description;
+      this.isDueDateInvalid = !this.task.dueDate;
+
+      if (this.isTaskValid) {
+        if (this.task.uuid) {
+          await this.updateTask(this.task);
+          this.setAlertMessage('Updated Task Successfully');
+        } else {
+          await this.createTask(this.task);
+          this.setAlertMessage('Created Task Successfully');
+        }
+        this.$emit('close');
       }
-      this.$emit('close');
     },
     async deleteTaskListener() {
       await this.deleteTask(this.task);

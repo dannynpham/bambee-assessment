@@ -115,6 +115,9 @@ export default {
     tasksSortByAsc() {
       this.$emit('filterTasks', { filters: this.filters, search: this.search });
     },
+    tasks() {
+      this.$emit('filterTasks', { filters: this.filters, search: this.search });
+    },
   },
   methods: {
     toggleAsc() {

@@ -61,7 +61,6 @@ export default {
     isPasswordInvalid: false,
   }),
   mounted() {
-    console.log(this);
     try {
       // Monkey patch UI inputs
       const emailEl = document.querySelector('.email input');
@@ -89,14 +88,13 @@ export default {
         this.isPasswordInvalid = false;
       }
     },
-    submit() {
+    async submit() {
       this.isEmailInvalid = !this.email;
       this.isPasswordInvalid = !this.password;
-      console.log(this.email, this.password);
       if (!this.isEmailInvalid || !this.isPasswordInvalid) {
-        console.log('api call');
+        // Make login API call
+        this.$router.push({ name: 'Tasks' });
       }
-      this.$router.push({ name: 'Tasks' });
     },
   },
 };

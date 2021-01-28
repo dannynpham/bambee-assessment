@@ -1,21 +1,30 @@
 <template>
   <div class="tasks h-screen w-screen flex justify-center bg-primary-tint-1">
-    <div class="flex flex-col w-full">
-      <TypeDisplay
-        class="mt-8 mb-14 m-auto text-white flex items-center"
-        :variant="$constants.Typography.Display.PETA"
-      >
-        Task Manager
-        <CounterBadge
-          class="ml-5"
-          :value="count"
-          :size="$constants.Button.Sizes.LARGE"
+    <div class="flex flex-col w-full max-w-screen-2xl">
+      <div class="w-full mx-auto flex justify-between items-center">
+        <div />
+        <TypeDisplay
+          class="mt-8 mb-14 m-auto text-white flex items-center"
+          :variant="$constants.Typography.Display.PETA"
+        >
+          Task Manager
+          <CounterBadge
+            class="ml-5"
+            :value="count"
+            :size="$constants.Button.Sizes.LARGE"
+          />
+        </TypeDisplay>
+        <IconButton
+          icon="plus"
+          :variant="$constants.Button.Variants.SECONDARY"
+          :size="$constants.Button.Sizes.GIANT"
+          @click="isTaskDialogVisible = true"
         />
-      </TypeDisplay>
+      </div>
       <TheTasksActions @filterTasks="filterTasks" />
       <div
         ref="tasksContainer"
-        class="tasks-container has-bottom-fade mx-auto max-w-screen-2xl overflow-y-auto relative"
+        class="tasks-container has-bottom-fade mx-auto overflow-y-auto relative"
         @scroll="tasksScroll"
       >
         <transition-group
@@ -47,7 +56,7 @@
     <TheTaskDialog
       v-if="isTaskDialogVisible"
       :selected-task="selectedTask"
-      @close="isTaskDialogVisible = false"
+      @close="closeDialog"
     />
   </div>
 </template>
@@ -66,7 +75,13 @@ export default {
     scrolledFromTop: false,
     filteredTasks: [],
     isTaskDialogVisible: false,
-    selectedTask: {},
+    selectedTask: {
+      uuid: '',
+      title: '',
+      description: '',
+      dueDate: '',
+      isCompleted: false,
+    },
   }),
   computed: {
     count() {
@@ -75,11 +90,20 @@ export default {
     ...mapGetters(['sortedTasks']),
   },
   async beforeMount() {
-    console.log(this);
     await this.$store.dispatch('fetchTasks');
     this.filteredTasks = this.sortedTasks;
   },
   methods: {
+    closeDialog() {
+      this.selectedTask = {
+        uuid: '',
+        title: '',
+        description: '',
+        dueDate: '',
+        isCompleted: false,
+      };
+      this.isTaskDialogVisible = false;
+    },
     filterTasks({ filters, search }) {
       const filtersToApply = [];
       if (search) {

@@ -6,14 +6,16 @@
     >
       <router-view />
     </transition>
-    <AlertBar
-      v-show="isAlertVisible"
-      id="alert-bar"
-      icon="alertTriangle"
-      :variant="$constants.Alert.Variants.SECONDARY"
-      :size="$constants.Alert.Sizes.LARGE"
-      :message="alertMessage"
-    />
+    <transition name="fade">
+      <AlertBar
+        v-show="isAlertVisible"
+        id="alert-bar"
+        icon="alertTriangle"
+        :variant="$constants.Alert.Variants.SECONDARY"
+        :size="$constants.Alert.Sizes.LARGE"
+        :message="alertMessage"
+      />
+    </transition>
   </div>
 </template>
 
@@ -33,7 +35,7 @@ export default {
         setTimeout(() => {
           this.isAlertVisible = false;
           this.setAlertMessage('');
-        }, 2000);
+        }, 3000);
       }
     },
   },
@@ -61,10 +63,17 @@ html {
     }
   }
 }
+// Move transition css to it's own file
 .component-fade-enter-active, .component-fade-leave-active {
   transition: opacity .3s ease;
 }
 .component-fade-enter, .component-fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 1.5s;
+}
+.fade-enter, .fade-leave-to {
   opacity: 0;
 }
 </style>

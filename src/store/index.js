@@ -101,6 +101,7 @@ export default new Vuex.Store({
       //   body: task,
       // });
       // const data = await res.json();
+      task.uuid = faker.fake('{{random.uuid}}');
       await fakeApiDelay();
       commit('addTask', task);
     },
