@@ -3,6 +3,7 @@
     <CheckboxInput
       class="task-card-checkbox self-center justify-self-end"
       :value="task.isCompleted"
+      @input="setTaskCompleted(task, $event)"
     />
     <TypeHeading
       class="task-card-title self-center xl:text-4xl"
@@ -33,6 +34,7 @@
 
 <script>
 import moment from 'moment';
+import { mapActions } from 'vuex';
 
 export default {
   name: 'TaskCard',
@@ -43,6 +45,10 @@ export default {
     },
   },
   methods: {
+    setTaskCompleted(task, isCompleted) {
+      const clonedTask = { ...task, isCompleted };
+      this.updateTask(clonedTask);
+    },
     readableDate(date) {
       const readableDay = {
         '-1': 'Yesterday',
@@ -56,6 +62,7 @@ export default {
       }
       return moment(date).format('l');
     },
+    ...mapActions(['updateTask']),
   },
 };
 </script>

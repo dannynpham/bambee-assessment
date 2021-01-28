@@ -24,7 +24,7 @@
         >
           <TaskCard
             v-for="task in filteredTasks"
-            :key="task.id"
+            :key="task.uuid"
             :task="task"
             @openTask="openTask"
           />
@@ -44,21 +44,29 @@
         </ToolTip>
       </div>
     </div>
+    <TheTaskDialog
+      v-if="isTaskDialogVisible"
+      :selected-task="selectedTask"
+      @close="isTaskDialogVisible = false"
+    />
   </div>
 </template>
 
 <script>
 import TaskCard from '@/components/TaskCard.vue';
 import TheTasksActions from '@/components/TheTasksActions.vue';
+import TheTaskDialog from '@/components/TheTaskDialog.vue';
 import moment from 'moment';
 import { mapGetters } from 'vuex';
 
 export default {
   name: 'Tasks',
-  components: { TaskCard, TheTasksActions },
+  components: { TaskCard, TheTasksActions, TheTaskDialog },
   data: () => ({
     scrolledFromTop: false,
     filteredTasks: [],
+    isTaskDialogVisible: false,
+    selectedTask: {},
   }),
   computed: {
     count() {
@@ -98,8 +106,9 @@ export default {
       });
       this.filteredTasks = this.sortedTasks.filter((task) => filtersToApply.every((filterFn) => filterFn(task)));
     },
-    openTask() {
-      console.log('openTask');
+    openTask(task) {
+      this.selectedTask = task;
+      this.isTaskDialogVisible = true;
     },
     scrollTasksToTop() {
       this.$refs.tasksContainer.scrollTo({ top: 0, behavior: 'smooth' });

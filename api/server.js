@@ -13,8 +13,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 app.get('/tasks', (req, res) => {
-  const tasks = Array.from({ length: 30 }).map((_val, id) => ({
-    id,
+  const tasks = Array.from({ length: 30 }).map(() => ({
+    uuid: faker.fake('{{random.uuid}}'),
     title: faker.fake('{{lorem.sentence}}'),
     description: faker.fake('{{lorem.paragraph}}'),
     isCompleted: !!Math.round(Math.random()),
@@ -33,15 +33,15 @@ app.get('/tasks', (req, res) => {
 //   });
 // });
 
-// app.post('/tasks/:id', (req, res) => {
-//   Task.findByIdAndUpdate(req.params.id, req.body.data, { new: true }, (err, task) => {
+// app.post('/tasks/:uuid', (req, res) => {
+//   Task.findByIdAndUpdate(req.params.uuid, req.body.data, { new: true }, (err, task) => {
 //     if (err) return res.status(404).send({ message: err.message });
 //     return res.send({ message: 'task updated!', task });
 //   });
 // });
 
-// app.delete('/tasks/:id', (req, res) => {
-//   Task.findByIdAndRemove(req.params.id, (err) => {
+// app.delete('/tasks/:uuid', (req, res) => {
+//   Task.findByIdAndRemove(req.params.uuid, (err) => {
 //     if (err) return res.status(404).send({ message: err.message });
 //     return res.send({ message: 'task deleted!' });
 //   });
