@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "test": "echo 'test'",
     "lint": "vue-cli-service lint",
     "lint:scss": "stylelint ./src/**/*.{vue,scss} --fix",
     "api": "nodemon api/server.js"
